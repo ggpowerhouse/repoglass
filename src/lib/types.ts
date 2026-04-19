@@ -58,7 +58,7 @@ export type RepoRecord = {
   contributors_signal: number; // heuristic
   pivot_signal: boolean;
 
-  analysis_source: "openai" | "heuristic";
+  analysis_source: "llm" | "heuristic";
   created_at: string;
 };
 

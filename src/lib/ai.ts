@@ -46,7 +46,7 @@ export type AnalysisResult = {
   green_flags: string[];
   moat: string;
   pivot_suggestion: string;
-  source: "openai" | "heuristic";
+  source: "llm" | "heuristic";
 };
 
 const SYSTEM_PROMPT = `You are NIKHIL KAMATH judging a BUILD-A-THON project.
@@ -133,13 +133,20 @@ function buildUserPayload(ctx: RepoContext): string {
 }
 
 export async function analyzeRepo(ctx: RepoContext): Promise<AnalysisResult> {
-  if (!process.env.OPENAI_API_KEY) {
+  // Accept either OPENAI_API_KEY (OpenAI) or LLM_API_KEY (any OpenAI-compatible
+  // provider like Groq, Together, Fireworks, OpenRouter). Both are optional —
+  // without them we fall back to the deterministic heuristic scorer.
+  const apiKey = process.env.LLM_API_KEY || process.env.OPENAI_API_KEY;
+  if (!apiKey) {
     return heuristicAnalyze(ctx);
   }
 
   try {
-    const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
-    const model = process.env.OPENAI_MODEL || "gpt-4o-mini";
+    const baseURL = process.env.LLM_BASE_URL || undefined; // e.g. https://api.groq.com/openai/v1
+    const client = new OpenAI({ apiKey, baseURL });
+    // LLM_MODEL wins; fall back to OPENAI_MODEL; finally to a safe OpenAI default.
+    const model =
+      process.env.LLM_MODEL || process.env.OPENAI_MODEL || "gpt-4o-mini";
 
     const resp = await client.chat.completions.create({
       model,
@@ -191,10 +198,10 @@ export async function analyzeRepo(ctx: RepoContext): Promise<AnalysisResult> {
       green_flags: parsed.green_flags,
       moat: parsed.moat,
       pivot_suggestion: parsed.pivot_suggestion,
-      source: "openai",
+      source: "llm",
     };
   } catch (err) {
-    console.error("OpenAI scoring failed, falling back to heuristic:", err);
+    console.error("LLM scoring failed, falling back to heuristic:", err);
     return heuristicAnalyze(ctx);
   }
 }

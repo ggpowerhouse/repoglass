@@ -68,7 +68,7 @@ export function VerdictCard({ repo }: { repo: RepoRecord }) {
               );
             })()}
             <span className="micro-cap">
-              {repo.analysis_source === "openai" ? "AI-judged" : "Heuristic"}
+              {repo.analysis_source === "llm" ? "AI-judged" : "Heuristic"}
             </span>
           </div>
 
