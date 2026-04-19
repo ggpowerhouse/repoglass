@@ -66,4 +66,16 @@ create policy "public read"
 
 -- Inserts/updates happen via the Next.js API route using the service-role key.
 
-alter publication supabase_realtime add table public.repositories;
+-- Enable Realtime on this table. Idempotent: safe to re-run.
+do $$
+begin
+  if not exists (
+    select 1
+    from pg_publication_tables
+    where pubname = 'supabase_realtime'
+      and schemaname = 'public'
+      and tablename = 'repositories'
+  ) then
+    execute 'alter publication supabase_realtime add table public.repositories';
+  end if;
+end $$;
