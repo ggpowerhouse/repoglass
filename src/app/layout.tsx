@@ -3,6 +3,7 @@ import { GeistSans } from "geist/font/sans";
 import { GeistMono } from "geist/font/mono";
 import { Toaster } from "sonner";
 import { GlassLightTracker } from "@/components/glass-light-tracker";
+import { SearchPalette } from "@/components/search-palette";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -32,6 +33,7 @@ export default function RootLayout({
         style={{ fontFamily: "var(--font-geist-sans), system-ui, sans-serif" }}
       >
         <GlassLightTracker />
+        <SearchPalette />
         {children}
         <Toaster
           theme="dark"

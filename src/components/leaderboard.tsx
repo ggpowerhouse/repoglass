@@ -39,10 +39,13 @@ export function Leaderboard({
   initial,
   highlight,
   scope,
+  filter,
 }: {
   initial: RepoRecord[];
   highlight?: string;
   scope: EventId | "all";
+  /** Optional client-side text filter applied after every fetch. */
+  filter?: string;
 }) {
   const [repos, setRepos] = useState<RepoRecord[]>(initial);
 
@@ -88,18 +91,42 @@ export function Leaderboard({
     };
   }, [scope]);
 
-  const sorted = useMemo(
-    () => [...repos].sort((a, b) => b.total_score - a.total_score),
-    [repos]
-  );
+  const sorted = useMemo(() => {
+    const q = (filter ?? "").trim().toLowerCase();
+    const base = [...repos].sort((a, b) => b.total_score - a.total_score);
+    if (!q) return base;
+    return base.filter((r) => {
+      const slug = `${r.owner}/${r.name}`.toLowerCase();
+      return (
+        slug.includes(q) ||
+        r.owner.toLowerCase().includes(q) ||
+        r.name.toLowerCase().includes(q) ||
+        (r.description ?? "").toLowerCase().includes(q) ||
+        r.verdict.toLowerCase().includes(q) ||
+        (r.language ?? "").toLowerCase().includes(q)
+      );
+    });
+  }, [repos, filter]);
 
-  if (sorted.length === 0) {
+  if (repos.length === 0) {
     return (
       <div className="glass rounded-[28px] p-16 text-center max-w-2xl mx-auto">
         <div className="text-5xl mb-4 text-white/30 font-mono">◌</div>
         <div className="text-lg font-medium">No entries yet</div>
         <div className="text-sm text-white/50 mt-2">
           Be the first — submit a repo from the home page.
+        </div>
+      </div>
+    );
+  }
+
+  if (sorted.length === 0) {
+    return (
+      <div className="glass rounded-[28px] p-12 text-center max-w-2xl mx-auto">
+        <div className="text-4xl mb-3 text-white/30 font-mono">∅</div>
+        <div className="text-[15px] font-medium">No repos match your filter</div>
+        <div className="text-sm text-white/50 mt-1.5">
+          Try a different term, or clear the filter.
         </div>
       </div>
     );

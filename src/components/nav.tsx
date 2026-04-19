@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Search, Sparkles, Trophy, ScrollText, ShieldCheck } from "lucide-react";
+import { openSearchPalette } from "@/components/search-palette";
 
 export function Nav() {
   const pathname = usePathname();
@@ -26,13 +27,18 @@ export function Nav() {
         </Link>
 
         <div className="flex-1 mx-auto max-w-md hidden md:block">
-          <div className="glass rounded-full flex items-center gap-3 px-4 py-2">
-            <Search className="h-3.5 w-3.5 text-white/40" />
-            <span className="text-[13px] text-white/35 font-mono">
-              Search code, files, symbols…
+          <button
+            type="button"
+            onClick={openSearchPalette}
+            aria-label="Open repo search (⌘K)"
+            className="glass rounded-full flex items-center gap-3 px-4 py-2 w-full text-left hover:bg-white/[0.04] transition-colors focus-ring"
+          >
+            <Search className="h-3.5 w-3.5 text-white/50" />
+            <span className="text-[13px] text-white/50 font-mono">
+              Search analyzed repos…
             </span>
             <span className="ml-auto micro-cap !text-[9px]">⌘K</span>
-          </div>
+          </button>
         </div>
 
         <div className="flex items-center gap-2 ml-auto">
