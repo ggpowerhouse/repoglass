@@ -1,0 +1,32 @@
+# dependencies
+node_modules
+
+# Next.js
+.next
+out
+build
+
+# env — NEVER commit
+.env
+.env.local
+.env*.local
+
+# OS / editor
+.DS_Store
+*.log
+.vscode
+.idea
+
+# Vercel
+.vercel
+
+# TypeScript
+next-env.d.ts
+*.tsbuildinfo
+
+# Local portable node (machine-specific)
+.toolchain
+
+# Coverage / caches
+coverage
+.eslintcache
